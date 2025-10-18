@@ -42,52 +42,100 @@
         return ans;
     	}
 	};
-#合并数组
-#include <vector>
-#include <iostream>
-using namespace std;
-
-/**
- * 方法一：归并两个有序数组，然后计算中位数
- * 原理：将两个有序数组合并为一个大的有序数组，再根据总长度的奇偶性取中间元素
- */
-double findMedianSortedArraysMerge(vector<int>& nums1, vector<int>& nums2) {
-    int m = nums1.size();  // 第一个数组长度
-    int n = nums2.size();  // 第二个数组长度
-    vector<int> merged;   // 用于存储合并后的有序数组
-    int i = 0, j = 0;     // 两个数组的遍历指针
-
-    // 合并两个有序数组（类似归并排序的合并步骤）
-    while (i < m && j < n) {
-        // 取较小的元素放入合并数组，并移动对应指针
-        if (nums1[i] < nums2[j]) {
-            merged.push_back(nums1[i]);
-            i++;
-        } else {
-            merged.push_back(nums2[j]);
-            j++;
-        }
-    }
-
-    // 处理第一个数组剩余的元素（若有）
-    while (i < m) {
-        merged.push_back(nums1[i]);
-        i++;
-    }
-
-    // 处理第二个数组剩余的元素（若有）
-    while (j < n) {
-        merged.push_back(nums2[j]);
-        j++;
-    }
-
-    // 计算中位数
-    int totalLen = merged.size();
-    if (totalLen % 2 == 1) {
-        // 总长度为奇数：直接返回中间位置的元素
-        return merged[totalLen / 2];
-    } else {
-        // 总长度为偶数：返回中间两个元素的平均值
-        return (merged[totalLen / 2 - 1] + merged[totalLen / 2]) / 2.0;
-    }
-	}
+#	合并数组
+	#include <vector>
+	#include <iostream>
+	using namespace std;
+	
+	/**
+	 * 方法一：归并两个有序数组，然后计算中位数
+	 * 原理：将两个有序数组合并为一个大的有序数组，再根据总长度的奇偶性取中间元素
+	 */
+	double findMedianSortedArraysMerge(vector<int>& nums1, vector<int>& nums2) {
+	    int m = nums1.size();  // 第一个数组长度
+	    int n = nums2.size();  // 第二个数组长度
+	    vector<int> merged;   // 用于存储合并后的有序数组
+	    int i = 0, j = 0;     // 两个数组的遍历指针
+	
+	    // 合并两个有序数组（类似归并排序的合并步骤）
+	    while (i < m && j < n) {
+	        // 取较小的元素放入合并数组，并移动对应指针
+	        if (nums1[i] < nums2[j]) {
+	            merged.push_back(nums1[i]);
+	            i++;
+	        } else {
+	            merged.push_back(nums2[j]);
+	            j++;
+	        }
+	    }
+	
+	    // 处理第一个数组剩余的元素（若有）
+	    while (i < m) {
+	        merged.push_back(nums1[i]);
+	        i++;
+	    }
+	
+	    // 处理第二个数组剩余的元素（若有）
+	    while (j < n) {
+	        merged.push_back(nums2[j]);
+	        j++;
+	    }
+	
+	    // 计算中位数
+	    int totalLen = merged.size();
+	    if (totalLen % 2 == 1) {
+	        // 总长度为奇数：直接返回中间位置的元素
+	        return merged[totalLen / 2];
+	    } else {
+	        // 总长度为偶数：返回中间两个元素的平均值
+	        return (merged[totalLen / 2 - 1] + merged[totalLen / 2]) / 2.0;
+	    }
+		}
+#	移动指针
+	/**
+	 * 方法二：不合并数组，通过双指针移动找到中位数位置
+	 * 原理：利用总长度已知的特性，通过指针移动计数，直接定位到中位数对应的元素
+	 */
+	double findMedianSortedArraysPointer(vector<int>& nums1, vector<int>& nums2) {
+	    int m = nums1.size();   // 第一个数组长度
+	    int n = nums2.size();   // 第二个数组长度
+	    int totalLen = m + n;   // 总长度
+	    int k = totalLen / 2;   // 中位数位置（偶数时需同时考虑k-1和k）
+	    int i = 0, j = 0;       // 两个数组的遍历指针
+	    int prev = 0, curr = 0; // 记录当前和上一个中间元素（用于偶数长度）
+	
+	    // 循环k+1次，找到第k个元素（0-based），同时记录前一个元素（用于偶数情况）
+	    for (int count = 0; count <= k; count++) {
+	        prev = curr;  // 更新上一个元素为当前元素
+	
+	        // 情况1：第一个数组已遍历完，只能取第二个数组的元素
+	        if (i >= m) {
+	            curr = nums2[j];
+	            j++;
+	        }
+	        // 情况2：第二个数组已遍历完，只能取第一个数组的元素
+	        else if (j >= n) {
+	            curr = nums1[i];
+	            i++;
+	        }
+	        // 情况3：第一个数组当前元素更小，取第一个数组的元素
+	        else if (nums1[i] < nums2[j]) {
+	            curr = nums1[i];
+	            i++;
+	        }
+	        // 情况4：第二个数组当前元素更小，取第二个数组的元素
+	        else {
+	            curr = nums2[j];
+	            j++;
+	        }
+	    }
+	
+	    // 根据总长度的奇偶性返回结果
+	    if (totalLen % 2 == 1) {
+	        // 奇数长度：中位数是第k个元素
+	        return curr;
+	    } else {
+	        // 偶数长度：中位数是第k-1和k个元素的平均值
+	        return (prev + curr) / 2.0;
+	    }
+		}
