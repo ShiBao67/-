@@ -43,6 +43,7 @@
     	}
 	};
 #	合并数组
+	https://www.doubao.com/chat/24996965021505282
 	#include <vector>
 	#include <iostream>
 	using namespace std;
